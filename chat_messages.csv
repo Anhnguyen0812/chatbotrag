@@ -1,0 +1,12 @@
+message,session_id,user_id
+"Ngày mai tôi có kế hoạch gì không?","test_privacy_006","A8fMfRb4dyOVGKmKtsckxjG9kkw2"
+"Xin chào, bạn có thể giúp gì cho tôi?","session_001","A8fMfRb4dyOVGKmKtsckxjG9kkw2"
+"Tôi muốn biết về RAG chatbot","session_002","user_002"
+"Hãy giải thích cách hoạt động của hệ thống này","session_003","user_003"
+"Tôi cần hỗ trợ kỹ thuật","session_004","user_004"
+"Làm thế nào để sử dụng API này?","session_005","user_005"
+"Bạn có thể trả lời câu hỏi của tôi không?","session_006","user_006"
+"Tôi muốn tìm hiểu về machine learning","session_007","user_007"
+"Hãy kể về lịch sử của AI","session_008","user_008"
+"Tôi cần thông tin về Firebase","session_009","user_009"
+"Giải thích khái niệm retrieval-augmented generation","session_010","user_002"

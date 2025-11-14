@@ -1,0 +1,199 @@
+Tên quà: Đồng hồ thông minh (Smartwatch)
+Mô tả: Một chiếc đồng hồ thông minh là món quà tuyệt vời kết hợp giữa công nghệ và thời trang. Nó giúp người nhận theo dõi sức khỏe, nhận thông báo tiện lợi và thể hiện phong cách cá nhân. Đây là món quà thiết thực và cao cấp.
+Phù hợp cho: bạn trai, bạn gái, chồng, vợ
+Dịp lễ: sinh nhật, kỷ niệm, giáng sinh
+Sở thích: công nghệ, thời trang, sức khỏe, thể thao
+Ngân sách: trung bình, cao
+Phân loại: vật chất, công nghệ
+---
+Tên quà: Bộ sản phẩm chăm sóc da (Skincare Set)
+Mô tả: Một bộ skincare từ thương hiệu uy tín thể hiện sự quan tâm tinh tế đến việc chăm sóc bản thân của người ấy. Bạn có thể chọn bộ sản phẩm phù hợp với loại da của họ (da dầu, da khô, da nhạy cảm).
+Phù hợp cho: bạn gái, vợ
+Dịp lễ: sinh nhật, ngày 8/3, ngày 20/10, valentine
+Sở thích: làm đẹp, chăm sóc da, sức khỏe
+Ngân sách: trung bình
+Phân loại: vật chất, làm đẹp
+---
+Tên quà: Bàn phím cơ (Mechanical Keyboard)
+Mô tả: Nếu người yêu của bạn là lập trình viên, game thủ hoặc đơn giản là thích công nghệ, một chiếc bàn phím cơ với cảm giác gõ 'đã tay' và thiết kế đẹp sẽ là món quà cực kỳ tâm lý. Có thể chọn loại switch (blue, red, brown) tùy theo sở thích.
+Phù hợp cho: bạn trai, bạn gái
+Dịp lễ: sinh nhật, giáng sinh, ngày lễ tình nhân
+Sở thích: công nghệ, gaming, lập trình
+Ngân sách: trung bình, cao
+Phân loại: vật chất, công nghệ
+---
+Tên quà: Trang sức cá nhân hóa (Personalized Jewelry)
+Mô tả: Một sợi dây chuyền, lắc tay, hoặc nhẫn được khắc tên, ngày kỷ niệm, hoặc một thông điệp ý nghĩa. Đây là món quà mang tính cá nhân hóa cao, thể hiện sự trân trọng và tình cảm bền chặt.
+Phù hợp cho: bạn gái, vợ
+Dịp lễ: kỷ niệm, valentine, sinh nhật
+Sở thích: thời trang, lãng mạn
+Ngân sách: trung bình, cao
+Phân loại: vật chất, cá nhân hóa, thời trang
+---
+Tên quà: Lớp học trải nghiệm (Workshop/Class)
+Mô tả: Tặng một trải nghiệm thay vì một món đồ. Ví dụ: một lớp học làm gốm, lớp học nấu ăn (nấu món Âu/Á, làm bánh), hoặc lớp học pha chế. Đây là cơ hội để hai bạn cùng nhau tạo kỷ niệm mới.
+Phù hợp cho: bạn trai, bạn gái
+Dịp lễ: kỷ niệm, sinh nhật, ngày thường
+Sở thích: nấu ăn, nghệ thuật, thủ công, học hỏi
+Ngân sách: thấp, trung bình
+Phân loại: trải nghiệm, cặp đôi
+---
+Tên quà: Chuyến du lịch ngắn ngày (Weekend Getaway)
+Mô tả: Một chuyến đi bất ngờ đến một resort, homestay ở ngoại ô hoặc một thành phố gần. Đây là món quà trải nghiệm tuyệt vời để 'hâm nóng' tình cảm và thoát khỏi công việc bận rộn.
+Phù hợp cho: bạn trai, bạn gái, chồng, vợ
+Dịp lễ: kỷ niệm, sinh nhật, ngày lễ
+Sở thích: du lịch, khám phá, thư giãn
+Ngân sách: cao
+Phân loại: trải nghiệm, cặp đôi, lãng mạn
+---
+Tên quà: Tai nghe chống ồn (Noise-Cancelling Headphones)
+Mô tả: Một món quà công nghệ cao cấp, rất hữu ích cho người thường xuyên di chuyển, làm việc ở nơi ồn ào, hoặc đơn giản là muốn tận hưởng không gian âm nhạc riêng tư. Các thương hiệu như Sony, Bose, Apple là lựa chọn hàng đầu.
+Phù hợp cho: bạn trai, bạn gái
+Dịp lễ: sinh nhật, giáng sinh, kỷ niệm
+Sở thích: công nghệ, âm nhạc, du lịch, gaming
+Ngân sách: cao
+Phân loại: vật chất, công nghệ
+---
+Tên quà: Sách và Máy đọc sách (Book / E-reader)
+Mô tả: Nếu người yêu bạn là 'mọt sách', hãy tìm hiểu cuốn sách họ đang muốn đọc. Một lựa chọn cao cấp hơn là một chiếc máy đọc sách (như Kindle), giúp họ mang theo cả thư viện bên mình.
+Phù hợp cho: bạn trai, bạn gái
+Dịp lễ: sinh nhật, giáng sinh, ngày thường
+Sở thích: đọc sách, học hỏi, yên tĩnh
+Ngân sách: thấp, trung bình
+Phân loại: vật chất, tri thức
+---
+Tên quà: Album ảnh tự làm (Handmade Scrapbook)
+Mô tả: Một món quà 'handmade' chứa đầy kỷ niệm. Bạn có thể in ảnh của cả hai, viết lại những lời nhắn, và trang trí theo phong cách riêng. Đây là món quà tốn công sức nhưng vô giá về mặt tinh thần.
+Phù hợp cho: bạn trai, bạn gái
+Dịp lễ: kỷ niệm, valentine, sinh nhật
+Sở thích: lãng mạn, thủ công, chụp ảnh
+Ngân sách: thấp
+Phân loại: tự làm, cá nhân hóa, kỷ niệm
+---
+Tên quà: Nước hoa (Perfume/Cologne)
+Mô tả: Nước hoa là món quà cổ điển nhưng không bao giờ lỗi thời. Hãy chọn một mùi hương phù hợp với tính cách của người ấy (ví dụ: hương gỗ cho người nam tính, hương hoa cỏ cho người nữ tính, hương cam chanh cho người năng động).
+Phù hợp cho: bạn trai, bạn gái, chồng, vợ
+Dịp lễ: sinh nhật, valentine, giáng sinh, kỷ niệm
+Sở thích: thời trang, làm đẹp, sang trọng
+Ngân sách: trung bình, cao
+Phân loại: vật chất, thời trang
+---
+Tên quà: Cây cảnh văn phòng / Bể cá mini
+Mô tả: Một chậu cây nhỏ (như sen đá, xương rồng) hoặc một bể cá cảnh mini để bàn làm việc. Món quà này giúp giảm căng thẳng, mang lại không gian xanh và thể hiện sự quan tâm đến công việc của đối phương.
+Phù hợp cho: bạn trai, bạn gái
+Dịp lễ: ngày thường, sinh nhật, chúc mừng công việc mới
+Sở thích: thiên nhiên, trang trí, yên tĩnh
+Ngân sách: thấp
+Phân loại: vật chất, trang trí
+---
+Tên quà: Dụng cụ thể thao (Sports Gear)
+Mô tả: Nếu người yêu bạn đam mê một môn thể thao, hãy tặng họ dụng cụ liên quan. Ví dụ: một đôi giày chạy bộ mới, thảm tập yoga cao cấp, vợt cầu lông, hoặc áo đấu của đội bóng họ yêu thích.
+Phù hợp cho: bạn trai, bạn gái
+Dịp lễ: sinh nhật, ngày thường
+Sở thích: thể thao, fitness, chạy bộ, yoga, bóng đá
+Ngân sách: trung bình
+Phân loại: vật chất, sức khỏe
+---
+Tên quà: Máy chơi game (Console)
+Mô tả: Nếu người yêu bạn là một game thủ, một chiếc máy chơi game như PlayStation 5, Xbox Series X, hoặc Nintendo Switch (nếu họ chưa có) sẽ là món quà 'đỉnh cao'. Đây là món quà giải trí tuyệt vời sau những giờ làm việc căng thẳng.
+Phù hợp cho: bạn trai, bạn gái, chồng
+Dịp lễ: sinh nhật, giáng sinh, kỷ niệm
+Sở thích: gaming, công nghệ, giải trí
+Ngân sách: cao
+Phân loại: vật chất, công nghệ, giải trí
+---
+Tên quà: Ví da khắc tên
+Mô tả: Một chiếc ví da thật (ví nam hoặc ví nữ) là vật dụng hàng ngày. Việc khắc tên, chữ ký hoặc một thông điệp ngắn lên ví sẽ biến nó thành món quà cá nhân hóa độc đáo và luôn nhắc người ấy nhớ đến bạn.
+Phù hợp cho: bạn trai, bạn gái, chồng, vợ
+Dịp lễ: sinh nhật, kỷ niệm, valentine, ngày thường
+Sở thích: thời trang, thực tế, cá nhân hóa
+Ngân sách: trung bình
+Phân loại: vật chất, cá nhân hóa, thời trang
+---
+Tên quà: Bộ dụng cụ pha chế (Bartender Kit)
+Mô tả: Đối với người thích sáng tạo đồ uống, cocktail, hoặc đơn giản là thích tổ chức tiệc tại nhà, một bộ dụng cụ pha chế (shaker, ly đong, muỗng khuấy...) là món quà rất phong cách và hữu dụng.
+Phù hợp cho: bạn trai, bạn gái
+Dịp lễ: sinh nhật, tân gia, giáng sinh
+Sở thích: nấu ăn, pha chế, tiệc tùng, sành điệu
+Ngân sách: trung bình
+Phân loại: vật chất, sở thích
+---
+Tên quà: Một bữa tối lãng mạn (Tự nấu)
+Mô tả: Đây là món quà trải nghiệm tốn công sức nhưng vô cùng ý nghĩa. Hãy chuẩn bị những món ăn mà người ấy yêu thích dưới ánh nến và âm nhạc du dương. Nó thể hiện sự quan tâm chân thành hơn bất kỳ món quà đắt tiền nào.
+Phù hợp cho: bạn trai, bạn gái, chồng, vợ
+Dịp lễ: kỷ niệm, valentine, sinh nhật, ngày thường
+Sở thích: lãng mạn, ẩm thực, yên tĩnh
+Ngân sách: thấp, trung bình
+Phân loại: trải nghiệm, tự làm, lãng mạn
+---
+Tên quà: Máy ảnh lấy liền (Instant Camera)
+Mô tả: Một chiếc máy ảnh như Instax Mini cho phép chụp và in ảnh ngay lập tức. Đây là món quà tuyệt vời để ghi lại những khoảnh khắc đời thường, những chuyến du lịch và tạo ra những kỷ niệm cầm nắm được.
+Phù hợp cho: bạn gái, bạn trai
+Dịp lễ: sinh nhật, kỷ niệm, trước chuyến du lịch
+Sở thích: chụp ảnh, du lịch, thủ công, hoài cổ (vintage)
+Ngân sách: trung bình
+Phân loại: vật chất, sáng tạo, kỷ niệm
+---
+Tên quà: Đăng ký dịch vụ (Subscription Service)
+Mô tả: Một món quà phi vật chất nhưng rất thiết thực. Ví dụ: 1 năm sử dụng Netflix, Spotify Premium, gói tập luyện online, hoặc dịch vụ giao sách/cafe hàng tháng. Món quà này có giá trị sử dụng lâu dài.
+Phù hợp cho: bạn trai, bạn gái
+Dịp lễ: sinh nhật, giáng sinh, ngày thường
+Sở thích: xem phim, âm nhạc, đọc sách, thể thao
+Ngân sách: trung bình
+Phân loại: trải nghiệm, phi vật chất, dài hạn
+---
+Tên quà: Nồi chiên không dầu / Đồ gia dụng thông minh
+Mô tả: Nếu người yêu của bạn (hoặc cả hai) thích nấu ăn hoặc mới ra ở riêng, đồ gia dụng thông minh như nồi chiên không dầu, máy xay sinh tố đa năng, hoặc robot hút bụi là những món quà cực kỳ thiết thực, giúp tiết kiệm thời gian.
+Phù hợp cho: bạn gái, bạn trai, vợ, chồng
+Dịp lễ: sinh nhật, tân gia, kỷ niệm
+Sở thích: nấu ăn, công nghệ, gia đình, sức khỏe
+Ngân sách: trung bình, cao
+Phân loại: vật chất, thiết thực, gia dụng
+---
+Tên quà: Đàn Ukulele (hoặc nhạc cụ cơ bản)
+Mô tả: Một cây đàn Ukulele nhỏ xinh là món quà khởi đầu tuyệt vời cho người thích âm nhạc nhưng chưa biết chơi nhạc cụ. Nó dễ học và mang lại không khí vui vẻ. Bạn cũng có thể tặng kèm một khóa học cơ bản.
+Phù hợp cho: bạn gái, bạn trai
+Dịp lễ: sinh nhật, giáng sinh
+Sở thích: âm nhạc, sáng tạo, thư giãn
+Ngân sách: thấp, trung bình
+Phân loại: vật chất, sở thích, nghệ thuật
+---
+Tên quà: Giày thể thao (Sneakers)
+Mô tả: Một đôi giày sneaker từ thương hiệu mà họ yêu thích (như Nike, Adidas, Converse...). Đây vừa là món quà thời trang, vừa khuyến khích việc vận động, đi lại. Hãy chắc chắn bạn biết đúng size giày của họ.
+Phù hợp cho: bạn trai, bạn gái
+Dịp lễ: sinh nhật, ngày lễ, giáng sinh
+Sở thích: thời trang, thể thao, năng động, du lịch
+Ngân sách: trung bình, cao
+Phân loại: vật chất, thời trang
+---
+Tên quà: Máy tăm nước (Water Flosser)
+Mô tả: Một món quà bất ngờ nhưng thể hiện sự quan tâm sâu sắc đến sức khỏe răng miệng. Máy tăm nước giúp vệ sinh răng miệng sạch hơn bàn chải thông thường và là một trải nghiệm công nghệ thú vị.
+Phù hợp cho: bạn trai, bạn gái, chồng, vợ
+Dịp lễ: sinh nhật, ngày thường
+Sở thích: sức khỏe, công nghệ, chăm sóc bản thân
+Ngân sách: trung bình
+Phân loại: vật chất, sức khỏe, thiết thực
+---
+Tên quà: Hoa và Chocolate cao cấp
+Mô tả: Một sự kết hợp cổ điển nhưng luôn hiệu quả, đặc biệt vào Valentine hoặc các dịp lãng mạn. Hãy chọn một bó hoa tươi mà họ yêu thích (không nhất thiết là hoa hồng) và một hộp chocolate thủ công (handmade) hoặc nhập khẩu chất lượng.
+Phù hợp cho: bạn gái, vợ
+Dịp lễ: valentine, ngày 8/3, ngày 20/10, kỷ niệm, xin lỗi
+Sở thích: lãng mạn, ẩm thực, cổ điển
+Ngân sách: thấp, trung bình
+Phân loại: vật chất, lãng mạn
+---
+Tên quà: Thú cưng (Pet)
+Mô tả: Đây là một món quà vô cùng đặc biệt, mang lại niềm vui lớn lao nhưng cũng kèm theo trách nhiệm lớn. Chỉ nên tặng thú cưng (chó, mèo, cá, hamster...) khi bạn *hoàn toàn chắc chắn* người nhận mong muốn, có đủ điều kiện và thời gian để chăm sóc.
+Phù hợp cho: bạn trai, bạn gái
+Dịp lễ: kỷ niệm đặc biệt, sinh nhật
+Sở thích: động vật, thiên nhiên, chăm sóc
+Ngân sách: trung bình
+Phân loại: trải nghiệm, trách nhiệm, dài hạn
+---
+Tên quà: Vé xem hòa nhạc / Sự kiện
+Mô tả: Tặng vé xem buổi biểu diễn của nghệ sĩ, ban nhạc mà người yêu bạn hâm mộ, hoặc vé xem một vở kịch, một trận đấu thể thao. Cùng nhau tham gia sự kiện sẽ là một kỷ niệm khó quên.
+Phù hợp cho: bạn trai, bạn gái
+Dịp lễ: sinh nhật, kỷ niệm, ngày lễ
+Sở thích: âm nhạc, thể thao, nghệ thuật, giải trí
+Ngân sách: trung bình, cao
+Phân loại: trải nghiệm, cặp đôi, giải trí
