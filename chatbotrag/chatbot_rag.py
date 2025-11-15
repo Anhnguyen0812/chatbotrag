@@ -44,7 +44,7 @@ print("BM25 retriever đã sẵn sàng.")
 
 # --- 3. Khởi tạo mô hình Gemini Flash (giữ nguyên) ---
 llm = ChatGoogleGenerativeAI(
-    model="gemini-flash-latest",
+    model="gemini-flash-lite-latest",
     google_api_key=GOOGLE_API_KEY,
     temperature=0.5,
     convert_system_message_to_human=True

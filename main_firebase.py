@@ -68,7 +68,7 @@ def initialize_chatbot():
     # Gemini LLM
     api_key = get_google_api_key()
     llm = ChatGoogleGenerativeAI(
-        model="gemini-flash-latest",
+        model="gemini-flash-lite-latest",
         google_api_key=api_key,
         temperature=0.7,
         convert_system_message_to_human=True

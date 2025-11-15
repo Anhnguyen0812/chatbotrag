@@ -17,8 +17,9 @@ from firebase_admin import initialize_app, firestore
 import google.cloud.firestore
 
 # Flask imports
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response, stream_with_context
 from flask_cors import CORS
+import json
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_community.retrievers import BM25Retriever
@@ -33,6 +34,7 @@ from manageDataFirebase.getUserCollection import get_user_collection
 from manageDataFirebase.updateCollectionExists import update_collection_exists
 from manageDataFirebase.deleteDataColletionExists import delete_data_collection_exists
 from manageDataFirebase.checkCollectionExists import check_collection_exists
+from firebaseCache import get_cache as get_firebase_cache
 
 # Initialize Firebase Admin (only if not already initialized by firebaseClient)
 try:
@@ -57,21 +59,148 @@ CORS(app)
 # Firestore client (for production history storage)
 db = firestore.client()
 
+# --- API Key Rotation System ---
+import threading
+import time
+from functools import lru_cache
+from datetime import timedelta
+from collections import deque
+
+class APIKeyRotator:
+    """
+    Quản lý luân phiên nhiều API keys với rate limiting thông minh
+    
+    Rate Limits (Free tier Gemini 2.0 Flash Lite):
+    - 15 RPM (Requests Per Minute)
+    - 1,000,000 TPM (Tokens Per Minute)
+    - 1000 RPD (Requests Per Day)
+    """
+    
+    # Rate limit constants cho Free tier
+    RPM_LIMIT = 15  # requests per minute
+    SAFE_RPM = 12   # giới hạn an toàn (80% của limit)
+    
+    def __init__(self):
+        self.api_keys = self._load_api_keys()
+        self.current_index = 0
+        self.lock = threading.Lock()
+        
+        # Tracking cho mỗi key
+        self.key_usage_count = {key: 0 for key in self.api_keys}
+        self.key_last_used = {key: 0 for key in self.api_keys}
+        
+        # Rate limiting: track requests trong 1 phút gần nhất cho mỗi key
+        self.key_request_times = {key: deque(maxlen=100) for key in self.api_keys}
+        
+        if not self.api_keys:
+            raise ValueError("Không tìm thấy API keys. Vui lòng cấu hình GOOGLE_API_KEY_1, GOOGLE_API_KEY_2, GOOGLE_API_KEY_3")
+        
+        print(f"✅ API Key Rotator initialized với {len(self.api_keys)} keys")
+        print(f"   Rate limit: {self.SAFE_RPM} RPM per key (safe limit)")
+        print(f"   Total capacity: ~{self.SAFE_RPM * len(self.api_keys)} RPM")
+    
+    def _load_api_keys(self) -> List[str]:
+        """Load tất cả API keys từ environment variables"""
+        keys = []
+        
+        # Thử load từ GOOGLE_API_KEY_1, GOOGLE_API_KEY_2, GOOGLE_API_KEY_3
+        for i in range(1, 10):  # Hỗ trợ tối đa 9 keys
+            key = os.getenv(f"GOOGLE_API_KEY_{i}")
+            if key:
+                keys.append(key)
+        
+        # Fallback: nếu không có key nào, dùng GOOGLE_API_KEY (backward compatible)
+        if not keys:
+            default_key = os.getenv("GOOGLE_API_KEY")
+            if default_key:
+                keys.append(default_key)
+        
+        return keys
+    
+    def _get_rpm_for_key(self, key: str) -> int:
+        """Tính số requests trong 1 phút gần nhất cho key"""
+        current_time = time.time()
+        request_times = self.key_request_times[key]
+        
+        # Đếm số requests trong 60 giây gần nhất
+        recent_requests = sum(1 for t in request_times if current_time - t < 60)
+        return recent_requests
+    
+    def _find_available_key(self) -> str:
+        """Tìm key có thể dùng được (chưa vượt rate limit)"""
+        current_time = time.time()
+        
+        # Thử tất cả keys, bắt đầu từ current_index
+        for i in range(len(self.api_keys)):
+            idx = (self.current_index + i) % len(self.api_keys)
+            key = self.api_keys[idx]
+            
+            rpm = self._get_rpm_for_key(key)
+            
+            # Nếu key này chưa đạt safe limit, dùng nó
+            if rpm < self.SAFE_RPM:
+                self.current_index = (idx + 1) % len(self.api_keys)
+                return key
+        
+        # Nếu tất cả keys đều đạt limit, chọn key có RPM thấp nhất
+        min_key = min(self.api_keys, key=lambda k: self._get_rpm_for_key(k))
+        
+        # Cảnh báo nếu vượt limit
+        min_rpm = self._get_rpm_for_key(min_key)
+        if min_rpm >= self.SAFE_RPM:
+            print(f"⚠️ WARNING: Tất cả keys đang gần limit! Best key có {min_rpm} RPM")
+        
+        return min_key
+    
+    def get_next_key(self) -> str:
+        """Lấy API key tiếp theo với smart rate limiting"""
+        with self.lock:
+            if not self.api_keys:
+                raise ValueError("Không có API keys khả dụng")
+            
+            # Tìm key phù hợp
+            key = self._find_available_key()
+            
+            # Cập nhật thống kê
+            current_time = time.time()
+            self.key_usage_count[key] += 1
+            self.key_last_used[key] = current_time
+            self.key_request_times[key].append(current_time)
+            
+            return key
+    
+    def get_stats(self) -> Dict:
+        """Lấy thống kê sử dụng các API keys"""
+        with self.lock:
+            current_time = time.time()
+            
+            key_stats = []
+            for key in self.api_keys:
+                rpm = self._get_rpm_for_key(key)
+                usage_percent = (rpm / self.SAFE_RPM) * 100
+                
+                key_stats.append({
+                    "key_masked": f"{key[:10]}...{key[-4:]}",
+                    "total_requests": self.key_usage_count[key],
+                    "current_rpm": rpm,
+                    "rpm_limit": self.SAFE_RPM,
+                    "usage_percent": round(usage_percent, 1),
+                    "status": "🟢 OK" if rpm < self.SAFE_RPM * 0.8 else "🟡 BUSY" if rpm < self.SAFE_RPM else "🔴 LIMIT"
+                })
+            
+            return {
+                "total_keys": len(self.api_keys),
+                "total_capacity_rpm": self.SAFE_RPM * len(self.api_keys),
+                "keys": key_stats
+            }
+
+# Khởi tạo API Key Rotator global
+api_key_rotator = APIKeyRotator()
+
 # --- Helper: Lấy API Key ---
 def get_google_api_key():
-    """Lấy Google API Key từ environment hoặc Firebase config"""
-    # Try environment variable first (for local dev)
-    api_key = os.getenv("GOOGLE_API_KEY")
-    
-    # For Firebase Functions, use functions config
-    if not api_key:
-        # firebase functions:config:set google.api_key="YOUR_KEY"
-        api_key = os.environ.get("GOOGLE_API_KEY")
-    
-    if not api_key:
-        raise ValueError("Google API Key không được tìm thấy")
-    
-    return api_key
+    """Lấy Google API Key với rotation system"""
+    return api_key_rotator.get_next_key()
 
 
 def get_current_time_info() -> Dict[str, str]:
@@ -105,16 +234,20 @@ def initialize_chatbot():
         documents = pickle.load(f)
     print(f"Loaded {len(documents)} documents")
     
-    # BM25 Retriever
-    retriever = BM25Retriever.from_documents(documents, k=3)
+    # BM25 Retriever - Giảm k từ 3 xuống 1 để tăng tốc độ đáng kể
+    retriever = BM25Retriever.from_documents(documents, k=1)
     
-    # Gemini LLM
+    # Gemini LLM - Tối ưu cho streaming
     api_key = get_google_api_key()
     llm = ChatGoogleGenerativeAI(
-        model="gemini-flash-latest",
+        model="gemini-flash-lite-latest",  # Model nhanh nhất
         google_api_key=api_key,
-        temperature=0.5,
-        convert_system_message_to_human=True
+        temperature=0.4,  # Tăng một chút để generate nhanh hơn
+        convert_system_message_to_human=True,
+        streaming=True,  # Enable streaming by default
+        max_output_tokens=800,  # Giảm xuống 400 để nhanh hơn
+        top_p=0.95,  # Thêm top_p để ổn định
+        top_k=40  # Giới hạn sampling space
     )
     
     # Prompt với lịch sử
@@ -182,6 +315,45 @@ def get_retrieval_chain():
         retrieval_chain = initialize_chatbot()
         print("=== CHATBOT READY ===")
     return retrieval_chain
+
+# --- User Data Cache ---
+user_data_cache = {}
+CACHE_TTL = 240  # 4 phút (cân bằng giữa fresh data và performance)
+
+def clear_user_cache(user_id: str):
+    """Clear tất cả cache cho user (cả main.py cache và firebaseCache)"""
+    # Clear cache trong main.py
+    if user_id in user_data_cache:
+        del user_data_cache[user_id]
+        print(f"🗑️ Main cache cleared for user {user_id}")
+    
+    # Clear cache trong firebaseCache.py
+    firebase_cache = get_firebase_cache()
+    firebase_cache.invalidate(user_id)
+
+def get_user_data_cached(user_id: str) -> List[str]:
+    """Lấy user data với caching để tăng tốc"""
+    current_time = time.time()
+    
+    # Kiểm tra cache
+    if user_id in user_data_cache:
+        cached_data, cached_time = user_data_cache[user_id]
+        if current_time - cached_time < CACHE_TTL:
+            print(f"✅ Cache HIT cho user {user_id}")
+            return cached_data
+    
+    # Cache miss - load từ Firebase
+    print(f"⚠️ Cache MISS cho user {user_id} - loading từ Firebase...")
+    try:
+        from manageDataFirebase.buildDataApp import get_user_data_from_firebase
+        user_docs = get_user_data_from_firebase(user_id)
+        
+        # Lưu vào cache
+        user_data_cache[user_id] = (user_docs, current_time)
+        return user_docs
+    except Exception as e:
+        print(f"❌ Lỗi khi lấy data từ Firebase: {e}")
+        return []
 
 # --- Firestore History Management ---
 def get_history_from_firestore(session_id: str) -> List[Dict]:
@@ -275,6 +447,84 @@ def health_check():
         "timestamp": datetime.now().isoformat()
     })
 
+@app.route('/api-stats', methods=['GET'])
+def api_stats():
+    """Endpoint để xem thống kê sử dụng API keys"""
+    try:
+        stats = api_key_rotator.get_stats()
+        return jsonify({
+            "success": True,
+            "stats": stats,
+            "timestamp": datetime.now().isoformat()
+        })
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+@app.route('/cache/clear', methods=['POST'])
+def clear_cache():
+    """Clear user data cache"""
+    try:
+        global user_data_cache
+        user_id = request.get_json().get('user_id') if request.get_json() else None
+        
+        if user_id:
+            # Clear cache cho user cụ thể
+            if user_id in user_data_cache:
+                del user_data_cache[user_id]
+                return jsonify({
+                    "success": True,
+                    "message": f"Cache cleared cho user {user_id}"
+                })
+            else:
+                return jsonify({
+                    "success": False,
+                    "message": f"Không tìm thấy cache cho user {user_id}"
+                })
+        else:
+            # Clear toàn bộ cache
+            cache_size = len(user_data_cache)
+            user_data_cache.clear()
+            return jsonify({
+                "success": True,
+                "message": f"Đã clear {cache_size} user cache entries"
+            })
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+@app.route('/cache/stats', methods=['GET'])
+def cache_stats():
+    """Xem thống kê cache"""
+    try:
+        current_time = time.time()
+        cache_info = []
+        
+        for user_id, (data, cached_time) in user_data_cache.items():
+            age = current_time - cached_time
+            cache_info.append({
+                "user_id": user_id,
+                "documents_count": len(data),
+                "age_seconds": int(age),
+                "ttl_remaining": int(CACHE_TTL - age)
+            })
+        
+        return jsonify({
+            "success": True,
+            "total_cached_users": len(user_data_cache),
+            "cache_ttl": CACHE_TTL,
+            "cache_entries": cache_info
+        })
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
 def is_personal_question(message: str) -> bool:
     """
     Kiểm tra xem câu hỏi có liên quan đến thông tin cá nhân không
@@ -335,21 +585,18 @@ def chat():
         has_personal_context = False
         if user_id and use_personal_context:
             try:
-                # Load dữ liệu REALTIME từ Firebase, không dùng cache/pickle
-                from manageDataFirebase.buildDataApp import get_user_data_from_firebase
-                user_docs = get_user_data_from_firebase(user_id)
+                # Sử dụng cache để tăng tốc
+                user_docs = get_user_data_cached(user_id)
                 
                 if user_docs:
                     personal_context = "\n\nTHÔNG TIN CÁ NHÂN CỦA NGƯỜI DÙNG:\n"
                     personal_context += "\n".join([f"- {doc}" for doc in user_docs])
                     has_personal_context = True
-                    print(f"✅ Đã lấy {len(user_docs)} thông tin từ Firebase cho user {user_id}")
+                    print(f"✅ Đã lấy {len(user_docs)} thông tin cho user {user_id}")
                 else:
                     print(f"⚠️ User {user_id} chưa có dữ liệu trong Firebase")
             except Exception as e:
-                print(f"⚠️ Lỗi khi lấy thông tin từ Firebase: {e}")
-                import traceback
-                traceback.print_exc()
+                print(f"⚠️ Lỗi khi lấy thông tin: {e}")
         elif user_id and not use_personal_context:
             print(f"ℹ️ Câu hỏi không liên quan đến thông tin cá nhân, bỏ qua Firebase data cho user {user_id}")
         
@@ -392,6 +639,91 @@ def chat():
     
     except Exception as e:
         print(f"Error: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/chat/stream', methods=['POST'])
+def chat_stream():
+    """Streaming endpoint cho chat - trả token ngay khi nhận từ Gemini"""
+    try:
+        data = request.get_json()
+        
+        if not data or 'message' not in data:
+            return jsonify({"error": "Missing 'message'"}), 400
+        
+        session_id = data.get('session_id', 'default')
+        user_id = data.get('user_id')
+        user_message = data['message'].strip()
+        
+        if not user_message:
+            return jsonify({"error": "Message cannot be empty"}), 400
+        
+        # Lấy lịch sử và context cá nhân (giống endpoint /chat)
+        history_text = get_history_text(session_id)
+        use_personal_context = is_personal_question(user_message)
+        
+        personal_context = ""
+        if user_id and use_personal_context:
+            try:
+                # Sử dụng cache để tăng tốc
+                user_docs = get_user_data_cached(user_id)
+                if user_docs:
+                    personal_context = "\n\nTHÔNG TIN CÁ NHÂN CỦA NGƯỜI DÙNG:\n"
+                    personal_context += "\n".join([f"- {doc}" for doc in user_docs])
+                    print(f"✅ Stream: Đã lấy {len(user_docs)} thông tin cho user {user_id}")
+            except Exception as e:
+                print(f"⚠️ Stream: Lỗi: {e}")
+        
+        enhanced_history = history_text
+        if personal_context:
+            enhanced_history = f"{history_text}\n{personal_context}"
+        
+        current_time = get_current_time_info()
+        current_time_str = f"{current_time['vn_human']} (UTC: {current_time['utc_iso']})"
+        
+        # Tạo streaming generator
+        def generate():
+            try:
+                chain = get_retrieval_chain()
+                full_answer = ""
+                
+                # Send initial metadata
+                yield f"data: {json.dumps({'type': 'start', 'session_id': session_id})}\n\n"
+                
+                # Stream từ LLM
+                for chunk in chain.stream({
+                    "input": user_message,
+                    "history": enhanced_history,
+                    "current_time": current_time_str
+                }):
+                    # LangChain stream trả về dict với key 'answer'
+                    if 'answer' in chunk:
+                        token = chunk['answer']
+                        full_answer += token
+                        # Send token qua Server-Sent Events format
+                        yield f"data: {json.dumps({'type': 'token', 'content': token})}\n\n"
+                
+                # Lưu lịch sử sau khi stream xong
+                add_to_history(session_id, user_message, full_answer)
+                
+                # Send completion signal
+                yield f"data: {json.dumps({'type': 'done', 'full_answer': full_answer})}\n\n"
+                
+            except Exception as e:
+                error_msg = str(e)
+                print(f"Stream error: {error_msg}")
+                yield f"data: {json.dumps({'type': 'error', 'error': error_msg})}\n\n"
+        
+        return Response(
+            stream_with_context(generate()),
+            mimetype='text/event-stream',
+            headers={
+                'Cache-Control': 'no-cache',
+                'X-Accel-Buffering': 'no'
+            }
+        )
+    
+    except Exception as e:
+        print(f"Stream setup error: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
 
 @app.route('/history', methods=['GET'])
@@ -452,6 +784,9 @@ def create_user_collection():
         # Tạo collection mới
         build_collection_user(userID=user_id, text=text)
         
+        # Clear ALL caches cho user này
+        clear_user_cache(user_id)
+        
         return jsonify({
             "success": True,
             "message": f"Collection created for user {user_id}",
@@ -505,6 +840,9 @@ def update_user_collection():
         # Update collection
         update_collection_exists(userId=user_id, text=text, textId=text_id)
         
+        # Clear ALL caches cho user này để force reload
+        clear_user_cache(user_id)
+        
         return jsonify({
             "success": True,
             "message": f"Collection updated for user {user_id}",
@@ -537,6 +875,9 @@ def delete_from_user_collection():
         
         # Delete from collection
         delete_data_collection_exists(userId=user_id, textID=text_id)
+        
+        # Clear ALL caches cho user này
+        clear_user_cache(user_id)
         
         return jsonify({
             "success": True,
@@ -592,22 +933,6 @@ def query_user_collection():
     
     except Exception as e:
         print(f"Error querying user collection: {e}")
-        return jsonify({"success": False, "error": str(e)}), 500
-
-@app.route('/cache/stats', methods=['GET'])
-def cache_stats():
-    """Get cache statistics"""
-    try:
-        from firebaseCache import get_cache
-        cache = get_cache()
-        stats = cache.get_stats()
-        
-        return jsonify({
-            "success": True,
-            "cache_stats": stats,
-            "timestamp": datetime.now().isoformat()
-        })
-    except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
 @app.route('/cache/invalidate/<user_id>', methods=['POST'])

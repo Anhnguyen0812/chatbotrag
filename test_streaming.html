@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Streaming vs Non-Streaming</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .panel {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        .streaming { border-top: 3px solid #4CAF50; }
+        .non-streaming { border-top: 3px solid #2196F3; }
+        
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .non-streaming button {
+            background: #2196F3;
+        }
+        .non-streaming button:hover {
+            background: #0b7dda;
+        }
+        .response {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            min-height: 200px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            border: 1px solid #ddd;
+        }
+        .stats {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e8f5e9;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .non-streaming .stats {
+            background: #e3f2fd;
+        }
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+        }
+        .metric strong {
+            color: #333;
+        }
+        .input-section {
+            margin-bottom: 20px;
+        }
+        .warning {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 So sánh Streaming vs Non-Streaming</h1>
+    
+    <div class="warning">
+        <strong>⚠️ Chú ý:</strong> Đảm bảo server đang chạy ở <code>http://localhost:8080</code>
+    </div>
+
+    <div class="input-section">
+        <label><strong>Câu hỏi test:</strong></label>
+        <textarea id="question" rows="3">Gợi ý 5 địa điểm du lịch ở Đà Nẵng</textarea>
+        <label><strong>User ID (tùy chọn):</strong></label>
+        <input type="text" id="userId" placeholder="user123" style="width: 100%; padding: 8px; margin-top: 5px;">
+    </div>
+
+    <div class="container">
+        <!-- Streaming Panel -->
+        <div class="panel streaming">
+            <h2>✨ Streaming Response</h2>
+            <button onclick="testStreaming()">Test Streaming</button>
+            <div class="response" id="streamingResponse">Chưa có response...</div>
+            <div class="stats" id="streamingStats">
+                <div class="metric">
+                    <span>⏱️ Thời gian đến token đầu tiên:</span>
+                    <strong id="streamingTTFB">-</strong>
+                </div>
+                <div class="metric">
+                    <span>⏱️ Tổng thời gian:</span>
+                    <strong id="streamingTotal">-</strong>
+                </div>
+                <div class="metric">
+                    <span>📊 Tokens received:</span>
+                    <strong id="streamingTokens">-</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Non-Streaming Panel -->
+        <div class="panel non-streaming">
+            <h2>⏳ Non-Streaming Response</h2>
+            <button onclick="testNonStreaming()">Test Non-Streaming</button>
+            <div class="response" id="nonStreamingResponse">Chưa có response...</div>
+            <div class="stats" id="nonStreamingStats">
+                <div class="metric">
+                    <span>⏱️ Thời gian chờ:</span>
+                    <strong id="nonStreamingWait">-</strong>
+                </div>
+                <div class="metric">
+                    <span>⏱️ Tổng thời gian:</span>
+                    <strong id="nonStreamingTotal">-</strong>
+                </div>
+                <div class="metric">
+                    <span>📊 Response length:</span>
+                    <strong id="nonStreamingLength">-</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function testStreaming() {
+            const question = document.getElementById('question').value;
+            const userId = document.getElementById('userId').value;
+            const responseDiv = document.getElementById('streamingResponse');
+            const ttfbSpan = document.getElementById('streamingTTFB');
+            const totalSpan = document.getElementById('streamingTotal');
+            const tokensSpan = document.getElementById('streamingTokens');
+
+            responseDiv.textContent = 'Đang gửi request...';
+            const startTime = performance.now();
+            let firstTokenTime = null;
+            let tokenCount = 0;
+
+            try {
+                const response = await fetch('http://localhost:8080/chat/stream', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: question,
+                        user_id: userId || undefined,
+                        session_id: 'test_streaming'
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                responseDiv.textContent = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value, { stream: true });
+                    const lines = chunk.split('\n');
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = line.substring(6);
+                            if (data === '[DONE]') continue;
+
+                            try {
+                                const json = JSON.parse(data);
+                                if (json.token) {
+                                    if (firstTokenTime === null) {
+                                        firstTokenTime = performance.now();
+                                        const ttfb = ((firstTokenTime - startTime) / 1000).toFixed(2);
+                                        ttfbSpan.textContent = `${ttfb}s`;
+                                    }
+                                    responseDiv.textContent += json.token;
+                                    tokenCount++;
+                                    tokensSpan.textContent = tokenCount;
+                                }
+                            } catch (e) {
+                                // Skip invalid JSON
+                            }
+                        }
+                    }
+                }
+
+                const endTime = performance.now();
+                const totalTime = ((endTime - startTime) / 1000).toFixed(2);
+                totalSpan.textContent = `${totalTime}s`;
+
+            } catch (error) {
+                responseDiv.textContent = `❌ Error: ${error.message}`;
+                console.error(error);
+            }
+        }
+
+        async function testNonStreaming() {
+            const question = document.getElementById('question').value;
+            const userId = document.getElementById('userId').value;
+            const responseDiv = document.getElementById('nonStreamingResponse');
+            const waitSpan = document.getElementById('nonStreamingWait');
+            const totalSpan = document.getElementById('nonStreamingTotal');
+            const lengthSpan = document.getElementById('nonStreamingLength');
+
+            responseDiv.textContent = 'Đang chờ response...';
+            const startTime = performance.now();
+
+            try {
+                const response = await fetch('http://localhost:8080/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: question,
+                        user_id: userId || undefined,
+                        session_id: 'test_nonstreaming'
+                    })
+                });
+
+                const endTime = performance.now();
+                const totalTime = ((endTime - startTime) / 1000).toFixed(2);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                responseDiv.textContent = data.answer || JSON.stringify(data, null, 2);
+                waitSpan.textContent = `${totalTime}s`;
+                totalSpan.textContent = `${totalTime}s`;
+                lengthSpan.textContent = `${data.answer?.length || 0} chars`;
+
+            } catch (error) {
+                responseDiv.textContent = `❌ Error: ${error.message}`;
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>
